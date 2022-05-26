@@ -52,7 +52,8 @@ func isDigit(aChar byte) bool {
 func tryGetValue(aInput string, aIndex *int, aValue *int) bool {
 	skipSpace(aInput, aIndex)
 	i := *aIndex
-	for ; i < len(aInput) && isDigit(aInput[i]); i++ {
+	for i < len(aInput) && isDigit(aInput[i]) {
+		i++
 	}
 
 	if i > *aIndex {
