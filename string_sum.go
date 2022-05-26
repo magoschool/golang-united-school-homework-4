@@ -2,6 +2,7 @@ package string_sum
 
 import (
 	"errors"
+	"strconv"
 )
 
 //use these errors as appropriate, wrapping them with fmt.Errorf function
@@ -22,6 +23,100 @@ var (
 //
 // Use the errors defined above as described, again wrapping into fmt.Errorf
 
+func skipSpace(input string, index *int) {
+	for i := *index; i < len(input); i++ {
+		if input[i] > ' ' {
+			*index = i
+			return
+		}
+	}
+	*index = len(input)
+}
+
+func tryGetSign(aInput string, index *int, aSignValue *byte) bool {
+	skipSpace(aInput, index)
+	i := *index
+	if i < len(aInput) && (aInput[i] == '-' || aInput[i] == '+') {
+		*aSignValue = aInput[i]
+		*index = i + 1
+		skipSpace(aInput, index)
+		return true
+	}
+	return false
+}
+
+func isDigit(aChar byte) bool {
+	return aChar >= '0' && aChar <= '9'
+}
+
+func tryGetValue(aInput string, aIndex *int, aValue *int) bool {
+	skipSpace(aInput, aIndex)
+	i := *aIndex
+	for ; i < len(aInput) && isDigit(aInput[i]); i++ {
+	}
+
+	if i > *aIndex {
+		var lNumber = aInput[*aIndex:i]
+		lValue, lErr := strconv.Atoi(lNumber)
+		if lErr != nil {
+			return false
+		}
+
+		*aValue = lValue
+		*aIndex = i
+		skipSpace(aInput, aIndex)
+		return true
+	}
+
+	return false
+}
+
 func StringSum(input string) (output string, err error) {
-	return "", nil
+	var lIndex int = 0
+	var lSign byte = 0
+	var lValue1 int = 0
+	var lValue2 int = 0
+
+	skipSpace(input, &lIndex)
+	if lIndex >= len(input) {
+		return "", errorEmptyInput
+	}
+
+	if !tryGetSign(input, &lIndex, &lSign) {
+		lSign = '+'
+	}
+	if !tryGetValue(input, &lIndex, &lValue1) {
+		return "", errorNotTwoOperands
+	}
+	if lSign == '-' {
+		lValue1 = -lValue1
+	}
+
+	if !tryGetSign(input, &lIndex, &lSign) {
+		return "", errorNotTwoOperands
+	}
+	var lSign2 byte = 0
+	if tryGetSign(input, &lIndex, &lSign2) {
+		if lSign2 == '-' {
+			if lSign == '+' {
+				lSign = '-'
+			} else {
+				lSign = '+'
+			}
+		}
+	}
+
+	if !tryGetValue(input, &lIndex, &lValue2) {
+		return "", errorNotTwoOperands
+	}
+	if lSign == '-' {
+		lValue2 = -lValue2
+	}
+
+	skipSpace(input, &lIndex)
+	if lIndex < len(input) {
+		return "", errorNotTwoOperands
+	}
+
+	return strconv.Itoa(lValue1 + lValue2), nil
 }
