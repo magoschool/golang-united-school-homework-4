@@ -88,3 +88,7 @@ func TestWiteSpace(t *testing.T) {
 func TestEmpty(t *testing.T) {
 	testStringSum(t, "", "", msgEmptyError)
 }
+
+func TestLetters(t *testing.T) {
+	testStringSum(t, "a+b", "", "StringSum failed: strconv.Atoi: parsing \"a\": invalid syntax")
+}

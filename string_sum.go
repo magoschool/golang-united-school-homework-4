@@ -48,25 +48,19 @@ func tryGetSign(aInput string, index *int, aSignValue *byte) bool {
 	return false
 }
 
-func isDigit(aChar byte) bool {
-	return aChar >= '0' && aChar <= '9'
+func isTokenChar(aChar byte) bool {
+	return aChar > ' ' && aChar != '+' && aChar != '-'
 }
 
-func tryGetValue(aInput string, aIndex *int, aValue *int) bool {
+func tryGetValueToken(aInput string, aIndex *int, aToken *string) bool {
 	skipSpace(aInput, aIndex)
 	i := *aIndex
-	for i < len(aInput) && isDigit(aInput[i]) {
+	for i < len(aInput) && isTokenChar(aInput[i]) {
 		i++
 	}
 
 	if i > *aIndex {
-		var lNumber = aInput[*aIndex:i]
-		lValue, lErr := strconv.Atoi(lNumber)
-		if lErr != nil {
-			return false
-		}
-
-		*aValue = lValue
+		*aToken = aInput[*aIndex:i]
 		*aIndex = i
 		skipSpace(aInput, aIndex)
 		return true
@@ -78,6 +72,8 @@ func tryGetValue(aInput string, aIndex *int, aValue *int) bool {
 func StringSum(input string) (output string, err error) {
 	var lIndex int = 0
 	var lSign byte = 0
+	var lValueToken string
+	var lError error = nil
 	var lValue1 int = 0
 	var lValue2 int = 0
 
@@ -89,9 +85,14 @@ func StringSum(input string) (output string, err error) {
 	if !tryGetSign(input, &lIndex, &lSign) {
 		lSign = '+'
 	}
-	if !tryGetValue(input, &lIndex, &lValue1) {
+	if !tryGetValueToken(input, &lIndex, &lValueToken) {
 		return "", fmt.Errorf(errorMessage, errorNotTwoOperands)
 	}
+	lValue1, lError = strconv.Atoi(lValueToken)
+	if lError != nil {
+		return "", fmt.Errorf(errorMessage, lError)
+	}
+
 	if lSign == '-' {
 		lValue1 = -lValue1
 	}
@@ -110,9 +111,15 @@ func StringSum(input string) (output string, err error) {
 		}
 	}
 
-	if !tryGetValue(input, &lIndex, &lValue2) {
+	if !tryGetValueToken(input, &lIndex, &lValueToken) {
 		return "", fmt.Errorf(errorMessage, errorNotTwoOperands)
 	}
+
+	lValue2, lError = strconv.Atoi(lValueToken)
+	if lError != nil {
+		return "", fmt.Errorf(errorMessage, lError)
+	}
+
 	if lSign == '-' {
 		lValue2 = -lValue2
 	}
