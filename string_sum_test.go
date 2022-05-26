@@ -2,6 +2,9 @@ package string_sum
 
 import "testing"
 
+const msgTwoOperandsError = "StringSum failed: expecting two operands, but received more or less"
+const msgEmptyError = "StringSum failed: input is empty"
+
 func getErrorMessage(aError error) string {
 	if aError != nil {
 		return aError.Error()
@@ -9,11 +12,13 @@ func getErrorMessage(aError error) string {
 	return ""
 }
 
-func testStringSum(t *testing.T, aInput string, aResult string, aError error) {
+func testStringSum(t *testing.T, aInput string, aResult string, aError string) {
 	testValue, testError := StringSum(aInput)
 
-	if testError != aError {
-		t.Errorf("Invalid ReverseString output: '%v' expected but '%v' found", getErrorMessage(aError), getErrorMessage(testError))
+	testErrorText := getErrorMessage(testError)
+
+	if testErrorText != aError {
+		t.Errorf("Invalid ReverseString output: '%v' expected but '%v' found", aError, testErrorText)
 	}
 	if testValue != aResult {
 		t.Errorf("Invalid ReverseString output: '%v' expected but '%v' found", aResult, testValue)
@@ -21,53 +26,65 @@ func testStringSum(t *testing.T, aInput string, aResult string, aError error) {
 }
 
 func TestAdd(t *testing.T) {
-	testStringSum(t, "3+5", "8", nil)
+	testStringSum(t, "3+5", "8", "")
 }
 
 func TestSub(t *testing.T) {
-	testStringSum(t, "5-3", "2", nil)
+	testStringSum(t, "5-3", "2", "")
 }
 
 func TestAddNeg(t *testing.T) {
-	testStringSum(t, "5+-3", "2", nil)
+	testStringSum(t, "5+-3", "2", "")
 }
 
 func TestAddPos(t *testing.T) {
-	testStringSum(t, "5++3", "8", nil)
+	testStringSum(t, "5++3", "8", "")
 }
 
 func TestSubNeg(t *testing.T) {
-	testStringSum(t, "5--3", "8", nil)
+	testStringSum(t, "5--3", "8", "")
 }
 
 func TestSubPos(t *testing.T) {
-	testStringSum(t, "5-+3", "2", nil)
+	testStringSum(t, "5-+3", "2", "")
 }
 
 func TestPosAdd(t *testing.T) {
-	testStringSum(t, "+5+3", "8", nil)
+	testStringSum(t, "+5+3", "8", "")
 }
 
 func TestNegAdd(t *testing.T) {
-	testStringSum(t, "-5+3", "-2", nil)
+	testStringSum(t, "-5+3", "-2", "")
 }
 
 func TestArg1Error(t *testing.T) {
-	testStringSum(t, "+-5+3", "", errorNotTwoOperands)
+	testStringSum(t, "+-5+3", "", msgTwoOperandsError)
 }
 
 func TestOneArgError(t *testing.T) {
-	testStringSum(t, "-5", "", errorNotTwoOperands)
+	testStringSum(t, "-5", "", msgTwoOperandsError)
 }
 
 func TestThreeArgError(t *testing.T) {
-	testStringSum(t, "5+5+6", "", errorNotTwoOperands)
+	testStringSum(t, "5+5+6", "", msgTwoOperandsError)
 }
 
 func TestThreeSignError(t *testing.T) {
-	testStringSum(t, "5++-5", "", errorNotTwoOperands)
+	testStringSum(t, "5++-5", "", msgTwoOperandsError)
 }
 
-func TestIgnoreSpace(t *testing.T) {
-	testStringSum(t, "   5   +  -  2  ", "3", nil)
+func TestStringSum(t *testing.T) {
+	testStringSum(t, "   5   +  -  2  ", "3", "")
+}
+
+func TestEmptySpace(t *testing.T) {
+	testStringSum(t, "   5   +  -  2  ", "3", "")
+}
+
+func TestWiteSpace(t *testing.T) {
+	testStringSum(t, "   ", "", msgEmptyError)
+}
+
+func TestEmpty(t *testing.T) {
+	testStringSum(t, "", "", msgEmptyError)
 }

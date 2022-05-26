@@ -2,8 +2,11 @@ package string_sum
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 )
+
+const errorMessage = "StringSum failed: %w"
 
 //use these errors as appropriate, wrapping them with fmt.Errorf function
 var (
@@ -80,21 +83,21 @@ func StringSum(input string) (output string, err error) {
 
 	skipSpace(input, &lIndex)
 	if lIndex >= len(input) {
-		return "", errorEmptyInput
+		return "", fmt.Errorf(errorMessage, errorEmptyInput)
 	}
 
 	if !tryGetSign(input, &lIndex, &lSign) {
 		lSign = '+'
 	}
 	if !tryGetValue(input, &lIndex, &lValue1) {
-		return "", errorNotTwoOperands
+		return "", fmt.Errorf(errorMessage, errorNotTwoOperands)
 	}
 	if lSign == '-' {
 		lValue1 = -lValue1
 	}
 
 	if !tryGetSign(input, &lIndex, &lSign) {
-		return "", errorNotTwoOperands
+		return "", fmt.Errorf(errorMessage, errorNotTwoOperands)
 	}
 	var lSign2 byte = 0
 	if tryGetSign(input, &lIndex, &lSign2) {
@@ -108,7 +111,7 @@ func StringSum(input string) (output string, err error) {
 	}
 
 	if !tryGetValue(input, &lIndex, &lValue2) {
-		return "", errorNotTwoOperands
+		return "", fmt.Errorf(errorMessage, errorNotTwoOperands)
 	}
 	if lSign == '-' {
 		lValue2 = -lValue2
@@ -116,7 +119,7 @@ func StringSum(input string) (output string, err error) {
 
 	skipSpace(input, &lIndex)
 	if lIndex < len(input) {
-		return "", errorNotTwoOperands
+		return "", fmt.Errorf(errorMessage, errorNotTwoOperands)
 	}
 
 	return strconv.Itoa(lValue1 + lValue2), nil
